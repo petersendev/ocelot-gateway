@@ -16,12 +16,20 @@ steps:
   inputs:
     name: nbgv
 
-- script: nbgv cloud
+- script: nbgv cloud -c -a
   displayName: Set Version
   condition: and(succeeded(), eq(variables['system.pullrequest.isfork'], false))
 
 - script: env
   displayName: show env
 
-- script: docker build -t $(imageName):$(GitBuildVersionSimple) OcelotGateway
-  displayName: 'docker build'
+- script: docker build -t $(imageName):$(NBGV_SemVer1) OcelotGateway
+  displayName: docker build
+
+- script: docker tag $(imageName):$(NBGV_SemVer1) $(imageName):latest
+  displayName: docker set latest tag
+  condition: and(succeeded(), eq(variables['NBGV_PublicRelease'], true)
+
+- script: docker tag $(imageName):$(NBGV_SemVer1) $(imageName):pre
+  displayName: docker set latest tag
+  condition: and(succeeded(), eq(variables['NBGV_PublicRelease'], false)
