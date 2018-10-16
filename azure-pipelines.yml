@@ -20,21 +20,35 @@ steps:
   displayName: Set Version
   condition: and(succeeded(), eq(variables['system.pullrequest.isfork'], false))
 
+- task: Docker@1
+  displayName: docker login
+  inputs:    
+    containerregistrytype: 'Container Registry'
+    dockerRegistryEndpoint: DockerHub
+    command: login
+
 - script: docker build -t $(imageName):$(NBGV_SemVer1) OcelotGateway
   displayName: docker build
 
 - script: docker tag $(imageName):$(NBGV_SemVer1) $(imageName):dev
-  displayName: docker set dev tag
+  displayName: docker tag dev
   condition: and(succeeded(), eq(variables['NBGV_PublicRelease'], false))
 
-- script: docker tag $(imageName):$(NBGV_SemVer1) $(imageName):latest
-  displayName: docker set latest tag
+- script: |
+    docker tag $(imageName):$(NBGV_SemVer1) $(imageName):latest
+    docker push $(imageName):$(NBGV_SemVer1)
+    docker push $(imageName):latest
+  displayName: docker tag and push latest
   condition: and(succeeded(), eq(variables['NBGV_PublicRelease'], true))
 
-- script: docker tag $(imageName):$(NBGV_SemVer1) $(imageName):pre
-  displayName: docker set pre tag
+- script: |
+    docker tag $(imageName):$(NBGV_SemVer1) $(imageName):pre
+    docker push $(imageName):pre
+  displayName: docker tag and push pre
   condition: and(succeeded(), eq(variables['NBGV_PublicRelease'], true), ne(variables['NBGV_PrereleaseVersion'], ''))
 
-- script: docker tag $(imageName):$(NBGV_SemVer1) $(imageName):stable
-  displayName: docker set stable tag
+- script: |
+    docker tag $(imageName):$(NBGV_SemVer1) $(imageName):stable
+    docker push $(imageName):stable
+  displayName: docker tag and push stable
   condition: and(succeeded(), eq(variables['NBGV_PublicRelease'], true), eq(variables['NBGV_PrereleaseVersion'], ''))
