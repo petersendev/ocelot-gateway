@@ -7,8 +7,34 @@ pool:
   vmImage: 'Ubuntu 16.04'
 
 variables:
-  imageName: 'petersendev/ocelot-gateway:$(build.buildId)'
+  imageName: 'petersendev/ocelot-gateway'
 
 steps:
-- script: docker build -t $(imageName) OcelotGateway
-  displayName: 'docker build'
+
+- task: petersendev.dotnet-global-tool-installer.DotnetGlobalToolInstaller.DotnetGlobalToolInstaller@0
+  displayName: '.NET Core Global Tool'
+  inputs:
+    name: nbgv
+
+- script: nbgv cloud -c -a
+  displayName: Set Version
+  condition: and(succeeded(), eq(variables['system.pullrequest.isfork'], false))
+
+- script: docker build -t $(imageName):$(NBGV_SemVer1) OcelotGateway
+  displayName: docker build
+
+- script: docker tag $(imageName):$(NBGV_SemVer1) $(imageName):dev
+  displayName: docker set dev tag
+  condition: and(succeeded(), eq(variables['NBGV_PublicRelease'], false))
+
+- script: docker tag $(imageName):$(NBGV_SemVer1) $(imageName):latest
+  displayName: docker set latest tag
+  condition: and(succeeded(), eq(variables['NBGV_PublicRelease'], true))
+
+- script: docker tag $(imageName):$(NBGV_SemVer1) $(imageName):pre
+  displayName: docker set pre tag
+  condition: and(succeeded(), eq(variables['NBGV_PublicRelease'], true), ne(variables['NBGV_PrereleaseVersion'], ''))
+
+- script: docker tag $(imageName):$(NBGV_SemVer1) $(imageName):stable
+  displayName: docker set stable tag
+  condition: and(succeeded(), eq(variables['NBGV_PublicRelease'], true), eq(variables['NBGV_PrereleaseVersion'], ''))
