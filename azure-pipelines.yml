@@ -27,10 +27,14 @@ steps:
   displayName: docker set dev tag
   condition: and(succeeded(), eq(variables['NBGV_PublicRelease'], false))
 
+- script: docker tag $(imageName):$(NBGV_SemVer1) $(imageName):latest
+  displayName: docker set latest tag
+  condition: and(succeeded(), eq(variables['NBGV_PublicRelease'], true))
+
 - script: docker tag $(imageName):$(NBGV_SemVer1) $(imageName):pre
   displayName: docker set pre tag
   condition: and(succeeded(), eq(variables['NBGV_PublicRelease'], true), ne(variables['NBGV_PrereleaseVersion'], ''))
 
-- script: docker tag $(imageName):$(NBGV_SemVer1) $(imageName):latest
-  displayName: docker set latest tag
+- script: docker tag $(imageName):$(NBGV_SemVer1) $(imageName):stable
+  displayName: docker set stable tag
   condition: and(succeeded(), eq(variables['NBGV_PublicRelease'], true), eq(variables['NBGV_PrereleaseVersion'], ''))
