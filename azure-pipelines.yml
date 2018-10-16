@@ -23,7 +23,7 @@ steps:
 - script: docker build -t $(imageName):$(NBGV_SemVer1) OcelotGateway
   displayName: docker build
 
-  - script: docker tag $(imageName):$(NBGV_SemVer1) $(imageName):pre
+- script: docker tag $(imageName):$(NBGV_SemVer1) $(imageName):pre
   displayName: docker set pre tag
   condition: and(succeeded(), eq(variables['NBGV_PublicRelease'], false))
 
