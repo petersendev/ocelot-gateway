@@ -38,7 +38,7 @@ steps:
     docker tag $(imageName):$(NBGV_SemVer1) $(imageName):latest
     docker push $(imageName):$(NBGV_SemVer1)
     docker push $(imageName):latest
-  displayName: docker tag and push $(NBGV_SemVer1) and latest
+  displayName: docker tag and push latest
   condition: and(succeeded(), eq(variables['NBGV_PublicRelease'], true))
 
 - script: |
