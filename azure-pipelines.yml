@@ -15,7 +15,7 @@ steps:
   inputs:
     command: custom
     custom: tool
-    arguments: install --tool-path . nbgv
+    arguments: install -g nbgv
   displayName: Install NBGV tool
   condition: and(succeeded(), eq(variables['system.pullrequest.isfork'], false))
 
