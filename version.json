@@ -1,0 +1,10 @@
+{
+    "version": "1.0-beta",
+    "publicReleaseRefSpec": [
+        "^refs/heads/master$"
+    ],
+    "cloudBuild": {
+        "setVersionVariables": true,
+        "setAllVariables": true
+    }
+}
