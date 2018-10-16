@@ -23,10 +23,14 @@ steps:
 - script: docker build -t $(imageName):$(NBGV_SemVer1) OcelotGateway
   displayName: docker build
 
+- script: docker tag $(imageName):$(NBGV_SemVer1) $(imageName):dev
+  displayName: docker set dev tag
+  condition: and(succeeded(), eq(variables['NBGV_PublicRelease'], false))
+
 - script: docker tag $(imageName):$(NBGV_SemVer1) $(imageName):pre
   displayName: docker set pre tag
-  condition: and(succeeded(), eq(variables['NBGV_PublicRelease'], false))
+  condition: and(succeeded(), eq(variables['NBGV_PublicRelease'], true), ne(variables['NBGV_PrereleaseVersion'], ''))
 
 - script: docker tag $(imageName):$(NBGV_SemVer1) $(imageName):latest
   displayName: docker set latest tag
-  condition: and(succeeded(), eq(variables['NBGV_PublicRelease'], true))
+  condition: and(succeeded(), eq(variables['NBGV_PublicRelease'], true), eq(variables['NBGV_PrereleaseVersion'], ''))
